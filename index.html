@@ -37,21 +37,20 @@
       const polishLang = document.getElementById("lang");
       const output = document.querySelector(".output");
 
-      function searchHandler(e) {
+      async function searchHandler(e) {
         e.preventDefault();
 
-        let fetchUrl = `https://api.giphy.com/v1/gifs/search?api_key=n9TPh4J9dFmsmI9rPqPjfUaLBlE3vcpT&q=${search.value}&limit=5`;
+        let fetchUrl = `https://api.giphy.com/v1/gifs/search?api_key=ZlhnL0ADJcqkbXH1xNrkPMQz1glLQMfw&q=${search.value}&limit=5`;
         if (polishLang.checked)
-          fetchUrl = `https://api.giphy.com/v1/gifs/search?api_key=n9TPh4J9dFmsmI9rPqPjfUaLBlE3vcpT&q=${search.value}&limit=5&lang=pl`;
+          fetchUrl = `https://api.giphy.com/v1/gifs/search?api_key=ZlhnL0ADJcqkbXH1xNrkPMQz1glLQMfw&q=${search.value}&limit=5&lang=pl`;
         output.innerHTML = "";
-        fetch(fetchUrl, { mode: "cors" })
-          .then(function (response) {
-            return response.json();
-          })
-          .then((response) => searchOutput(response))
-          .catch((error) =>
-            console.log(`There was an error with your fetch ${error.message}`)
-          );
+        try {
+          const response = await fetch(fetchUrl, { mode: "cors" });
+          const gifData = await response.json();
+          searchOutput(gifData);
+        } catch (error) {
+          console.log(`There was an error with your fetch ${error.message}`);
+        }
       }
 
       form.addEventListener("submit", searchHandler);
@@ -73,7 +72,6 @@
           newGifDiv.appendChild(newImg);
 
           output.appendChild(newGifDiv);
-          console.log(element.images.original.url);
         });
       }
     </script>
