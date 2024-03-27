@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>GIF-s</title>
+    <style>
+      input {
+        font-size: 2rem;
+      }
+      body {
+        margin: 30px;
+      }
+      button {
+        margin-left: 10px;
+      }
+      p {
+        font-size: 1.5rem;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <form>
+      <label for="search"></label>
+      <input id="search" type="search" name="search" />
+
+      <input type="checkbox" id="lang" name="lang" />
+      <label for="lang">PL</label>
+
+      <button type="submit">Search</button>
+    </form>
+    <div class="output"></div>
+
+    <script>
+      const form = document.querySelector("form");
+      const search = document.getElementById("search");
+      const polishLang = document.getElementById("lang");
+      const output = document.querySelector(".output");
+
+      function searchHandler(e) {
+        e.preventDefault();
+
+        let fetchUrl = `https://api.giphy.com/v1/gifs/search?api_key=n9TPh4J9dFmsmI9rPqPjfUaLBlE3vcpT&q=${search.value}&limit=5`;
+        if (polishLang.checked)
+          fetchUrl = `https://api.giphy.com/v1/gifs/search?api_key=n9TPh4J9dFmsmI9rPqPjfUaLBlE3vcpT&q=${search.value}&limit=5&lang=pl`;
+        output.innerHTML = "";
+        fetch(fetchUrl, { mode: "cors" })
+          .then(function (response) {
+            return response.json();
+          })
+          .then((response) => searchOutput(response))
+          .catch((error) =>
+            console.log(`There was an error with your fetch ${error.message}`)
+          );
+      }
+
+      form.addEventListener("submit", searchHandler);
+
+      function searchOutput(response) {
+        if (response.data.length === 0) {
+          errorDiv = document.createElement("div");
+          errorDiv.innerHTML = `<p>There is no result for your input </p> <img src="download.jpg" alt="sad face">`;
+          output.appendChild(errorDiv);
+        }
+        response.data.forEach((element) => {
+          const newGifDiv = document.createElement("div");
+          const newP = document.createElement("p");
+          const newImg = document.createElement("img");
+
+          newP.textContent = `${element.title}`;
+          newGifDiv.appendChild(newP);
+          newImg.src = element.images.original.url;
+          newGifDiv.appendChild(newImg);
+
+          output.appendChild(newGifDiv);
+          console.log(element.images.original.url);
+        });
+      }
+    </script>
+  </body>
+</html>
